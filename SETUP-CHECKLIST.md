@@ -15,7 +15,7 @@ Go to **Settings → Secrets and variables → Actions → New repository secret
 
 Copy these **exact values** from [`SECRETS-QUICK-SETUP.md`](./SECRETS-QUICK-SETUP.md):
 
-1. **OPENROUTER_API_KEY**: `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`
+1. **OPENROUTER_API_KEY**: `YOUR_NEW_API_KEY_FROM_OPENROUTER`
 2. **EMAIL_USER**: `arog0507@gmail.com`  
 3. **EMAIL_APP_PASSWORD**: `jxky pggn alpq zfop`
 4. **NOTIFICATION_EMAIL**: `arog0507@gmail.com`

@@ -4,8 +4,8 @@
 
 ### **Secret 1: OPENROUTER_API_KEY**
 - **Name**: `OPENROUTER_API_KEY`
-- **Value**: `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`
-- **Description**: Free AI content generation API
+- **Value**: `YOUR_NEW_API_KEY_FROM_OPENROUTER`
+- **Description**: Free AI content generation API (Get from https://openrouter.ai/keys)
 
 ### **Secret 2: EMAIL_USER** 
 - **Name**: `EMAIL_USER`
@@ -48,7 +48,7 @@
 
 ```
 Secret Name: OPENROUTER_API_KEY
-Value: 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
+Value: YOUR_NEW_API_KEY_FROM_OPENROUTER
 
 Secret Name: EMAIL_USER  
 Value: arog0507@gmail.com
