@@ -7,11 +7,13 @@
 const nodemailer = require('nodemailer');
 const fs = require('fs-extra');
 const path = require('path');
+const InstantMessagingNotifier = require('../messaging/instant-notifications');
 require('dotenv').config();
 
 class NotificationSender {
     constructor() {
         this.setupTransporter();
+        this.instantMessaging = new InstantMessagingNotifier();
     }
 
     setupTransporter() {
@@ -42,6 +44,13 @@ class NotificationSender {
 
             await this.transporter.sendMail(mailOptions);
             console.log(`✅ Email notification sent for: ${lessonData.title}`);
+            
+            // Send instant messaging notifications
+            await this.instantMessaging.sendAllNotifications({
+                title: lessonData.title,
+                type: lessonData.type || 'learning',
+                content: lessonData.content || 'Learning content available'
+            });
             
         } catch (error) {
             console.error(`❌ Failed to send email: ${error.message}`);
