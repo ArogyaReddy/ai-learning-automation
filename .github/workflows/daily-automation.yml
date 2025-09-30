@@ -1,0 +1,119 @@
+name: AI Learning System - Free Daily Automation
+
+on:
+  # Daily schedule - all times in UTC (convert your local time)
+  schedule:
+    # 7:00 AM EST = 12:00 PM UTC
+    - cron: '0 12 * * *'  # Beginner → PRO Series
+    # 8:00 AM EST = 1:00 PM UTC  
+    - cron: '0 13 * * *'  # Pro-Tip Power Hour
+    # 1:00 PM EST = 6:00 PM UTC
+    - cron: '0 18 * * *'  # Things to Know
+    # 3:00 PM EST = 8:00 PM UTC
+    - cron: '0 20 * * *'  # AI Implementation
+    # 5:00 PM EST = 10:00 PM UTC
+    - cron: '0 22 * * *'  # Expert Level
+    # Weekly summary - Sunday 6 PM EST = 11 PM UTC
+    - cron: '0 23 * * 0'  # Weekly Summary
+
+  # Allow manual triggering for testing
+  workflow_dispatch:
+    inputs:
+      lesson_type:
+        description: 'Type of lesson to generate'
+        required: false
+        default: 'series'
+        type: choice
+        options:
+          - series
+          - pro-tip
+          - knowledge
+          - ai-implementation
+          - expert
+          - weekly-summary
+
+jobs:
+  generate-and-send-lesson:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: 🚀 Checkout Repository
+      uses: actions/checkout@v4
+
+    - name: 📦 Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: 'npm'
+
+    - name: 🔧 Install Dependencies
+      run: npm ci
+
+    - name: 🎯 Determine Lesson Type
+      id: lesson-type
+      run: |
+        if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+          echo "type=${{ github.event.inputs.lesson_type }}" >> $GITHUB_OUTPUT
+        else
+          # Determine lesson type based on current UTC hour
+          current_hour=$(date -u +%H)
+          case $current_hour in
+            12) echo "type=series" >> $GITHUB_OUTPUT ;;
+            13) echo "type=pro-tip" >> $GITHUB_OUTPUT ;;
+            18) echo "type=knowledge" >> $GITHUB_OUTPUT ;;
+            20) echo "type=ai-implementation" >> $GITHUB_OUTPUT ;;
+            22) echo "type=expert" >> $GITHUB_OUTPUT ;;
+            23) echo "type=weekly-summary" >> $GITHUB_OUTPUT ;;
+            *) echo "type=series" >> $GITHUB_OUTPUT ;;
+          esac
+        fi
+
+    - name: 📚 Generate and Send Lesson
+      env:
+        OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+        EMAIL_USER: ${{ secrets.EMAIL_USER }}
+        EMAIL_APP_PASSWORD: ${{ secrets.EMAIL_APP_PASSWORD }}
+        NOTIFICATION_EMAIL: ${{ secrets.NOTIFICATION_EMAIL }}
+        LEARNING_LEVEL: ${{ secrets.LEARNING_LEVEL }}
+        FOCUS_AREAS: ${{ secrets.FOCUS_AREAS }}
+        PREFERRED_LANGUAGE: ${{ secrets.PREFERRED_LANGUAGE }}
+        LEARNING_TIMEZONE: ${{ secrets.LEARNING_TIMEZONE }}
+        DEBUG_MODE: false
+        AUTO_GENERATE: true
+        SAVE_BACKUPS: true
+      run: |
+        echo "🎯 Generating lesson type: ${{ steps.lesson-type.outputs.type }}"
+        node .github/workflows/github-automation.js ${{ steps.lesson-type.outputs.type }}
+
+    - name: 📊 Upload Lesson Artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: daily-lesson-${{ steps.lesson-type.outputs.type }}-${{ github.run_number }}
+        path: |
+          daily-lessons/
+          logs/
+        retention-days: 30
+
+    - name: 💾 Commit Generated Content
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git add daily-lessons/
+        git add logs/ || true
+        if [ -n "$(git status --porcelain)" ]; then
+          git commit -m "🤖 Auto-generated lesson: ${{ steps.lesson-type.outputs.type }} $(date -u '+%Y-%m-%d %H:%M UTC')"
+          git push
+        else
+          echo "No changes to commit"
+        fi
+
+    - name: 📈 Usage Summary
+      run: |
+        echo "## 📊 Free Usage Summary" >> $GITHUB_STEP_SUMMARY
+        echo "- **Lesson Type**: ${{ steps.lesson-type.outputs.type }}" >> $GITHUB_STEP_SUMMARY
+        echo "- **Generated At**: $(date -u)" >> $GITHUB_STEP_SUMMARY  
+        echo "- **Monthly Cost**: $0.00 (Free Forever)" >> $GITHUB_STEP_SUMMARY
+        echo "- **GitHub Actions Minutes Used**: ~3 minutes" >> $GITHUB_STEP_SUMMARY
+        echo "- **Monthly Minutes Remaining**: ~1,997 minutes" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "🎉 **Your learning system is running 100% FREE in the cloud!**" >> $GITHUB_STEP_SUMMARY

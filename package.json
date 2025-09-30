@@ -1,0 +1,43 @@
+{
+  "name": "ai-learning-automation-system",
+  "version": "1.0.0",
+  "description": "Automated learning system for automation architects with daily content generation",
+  "main": "daily-automation.js",
+  "scripts": {
+    "start": "node daily-automation.js",
+    "generate-lesson": "node ai-tools/lesson-generator.js",
+    "send-notifications": "node email-automation/notification-sender.js",
+    "morning-routine": "npm run generate-lesson && npm run send-notifications",
+    "setup": "npm install && node setup/initial-setup.js",
+    "daemon": "node daemon.js start",
+    "daemon:stop": "node daemon.js stop",
+    "daemon:status": "node daemon.js status",
+    "automate": "bash setup-automation.sh",
+    "test-config": "node test-config.js"
+  },
+  "keywords": [
+    "automation",
+    "playwright",
+    "learning",
+    "ai",
+    "javascript",
+    "cucumber",
+    "testing"
+  ],
+  "author": "AI Learning System",
+  "license": "MIT",
+  "dependencies": {
+    "node-cron": "^3.0.3",
+    "nodemailer": "^6.9.7",
+    "axios": "^1.6.0",
+    "fs-extra": "^11.1.1",
+    "markdown-it": "^13.0.2",
+    "chalk": "^4.1.2",
+    "dotenv": "^16.3.1"
+  },
+  "devDependencies": {
+    "playwright": "^1.40.0",
+    "@cucumber/cucumber": "^10.0.0",
+    "jest": "^29.7.0"
+  }
+}
