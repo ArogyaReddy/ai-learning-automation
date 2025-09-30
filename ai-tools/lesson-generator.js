@@ -46,7 +46,7 @@ class LessonGenerator {
             const randomSeed = Math.floor(Math.random() * 10000);
             const dayOfYear = Math.floor((new Date() - new Date(new Date().getFullYear(), 0, 0)) / (1000 * 60 * 60 * 24));
             
-            const prompt = this.createPrompt(type, focus, learningLevel, timestamp, randomSeed, dayOfYear);
+            const prompt = this.buildPrompt({ type, focus, learningLevel, timestamp, randomSeed, dayOfYear });
             
             const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
                 method: 'POST',
@@ -62,7 +62,16 @@ class LessonGenerator {
                 })
             });
 
-            const lesson = response.data.choices[0].message.content;
+            if (!response.ok) {
+                throw new Error(`API request failed: ${response.status}`);
+            }
+
+            const data = await response.json();
+            if (data.choices && data.choices[0] && data.choices[0].message) {
+                return data.choices[0].message.content;
+            } else {
+                throw new Error('Invalid API response format');
+            }
             return this.formatLesson(lesson, config);
             
         } catch (error) {

@@ -1,5 +1,10 @@
 name: AI Learning System - Free Daily Automation
 
+# Grant necessary permissions for the workflow
+permissions:
+  contents: write    # Allow writing to repository
+  actions: read      # Allow reading workflow artifacts
+  
 on:
   # Daily schedule - all times in UTC (convert your local time)
   schedule:
@@ -95,6 +100,8 @@ jobs:
         retention-days: 30
 
     - name: 💾 Commit Generated Content
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
         git config --local user.email "action@github.com"
         git config --local user.name "GitHub Action"
